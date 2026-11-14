@@ -1,36 +1,37 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
 from datetime import datetime, timedelta
 
-st.set_page_config(page_title="ASTRA-MED", page_icon="🚀", layout="wide")
-st.markdown(r'''
+st.set_page_config(page_title="ASTRA MEDI", page_icon="🚀", layout="wide")
+
+st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 html,body,[class*="css"]{font-family:Manrope,sans-serif}
-.stApp{background:radial-gradient(ellipse at 80% 0%,#1a3155 0%,#0a1222 42%,#070b15 85%);color:#edf4ff}
+.stApp{background:radial-gradient(ellipse at 78% 0%,#1b3154 0%,#0a1222 43%,#070b15 86%);color:#edf4ff}
 .block-container{padding-top:1.2rem;max-width:1450px}
 section[data-testid="stSidebar"]{background:#0b1425;border-right:1px solid #263954}
-.brand{font-size:1.35rem;font-weight:800;letter-spacing:.18em;margin:0 0 1.4rem;color:#f5f9ff}
+.brand{font-size:1.35rem;font-weight:800;letter-spacing:.16em;margin:0 0 1.2rem;color:#f5f9ff}
 .brand span{color:#58e1f2}
 .hero,.panel,.metric{border:1px solid #2a3d5b;background:linear-gradient(140deg,#152640,#0d1729);border-radius:17px}
 .hero{padding:1.3rem 1.5rem;margin-bottom:1rem}
 .eyebrow{font-size:.7rem;letter-spacing:.18em;color:#58e1f2;font-weight:700}
 .hero h1{font-size:1.8rem;margin:.3rem 0}
 .hero p,.muted{color:#a8bad3}
-.metric{padding:15px;min-height:112px}
+.metric{padding:15px;min-height:108px}
 .metric-label{font-size:.72rem;color:#a8bad3;text-transform:uppercase;letter-spacing:.1em}
 .metric-value{font-size:1.8rem;font-weight:800;margin:.25rem 0;color:#f5f9ff}
 .metric-note{font-size:.75rem}
 .panel{padding:16px 18px;margin-bottom:12px}
-.stButton>button{background:#12384b;color:white;border:1px solid #58e1f2;border-radius:10px}
-.stButton>button:hover{background:#1a4c62;color:white}
+.stButton>button{background:#12384b;color:white;border:1px solid #58e1f2;border-radius:10px;min-height:48px}
+.stButton>button:hover{background:#1a4c62;color:white;border-color:#8af2ff}
+div[data-testid="stMetric"]{background:#13233a;border:1px solid #2a3d5b;padding:12px;border-radius:14px}
 .stTextInput input,.stNumberInput input,.stTextArea textarea{background:#0c1729;color:white}
 footer{visibility:hidden}
 </style>
-''', unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 if "history" not in st.session_state:
     rng=np.random.default_rng(8)
@@ -44,13 +45,14 @@ if "history" not in st.session_state:
     })
 if "notes" not in st.session_state: st.session_state.notes=[]
 
-st.markdown('<div class="brand"><span>✦</span> ASTRA-MED</div>',unsafe_allow_html=True)
+st.markdown('<div class="brand"><span>✦</span> ASTRA MEDI</div>',unsafe_allow_html=True)
+
 with st.sidebar:
     st.markdown('<p class="eyebrow">MISSION CONSOLE</p>',unsafe_allow_html=True)
-    page=st.radio("Navigation",["Overview","Health analytics","Daily check-in","Spaceflight hazards","Health guide"])
+    page=st.radio("Navigation",["Overview","Body Explorer","Health analytics","Daily check-in","Spaceflight hazards","Health guide"])
     mission=st.selectbox("Mission environment",["Deep-space transit","Lunar surface","Mars habitat","Space station"])
-    st.text_input("Crew ID", "CREW-01")
-    st.caption("Hackathon prototype • Demo data")
+    st.text_input("Crew ID","CREW-01")
+    st.caption("Hackathon prototype • Simulated demo data")
     st.divider()
     st.caption("Not a medical device. Follow mission medical procedures.")
 
@@ -62,6 +64,14 @@ def chart(df,key):
     fig.update_traces(line_color="#58e1f2",fillcolor="rgba(88,225,242,.12)")
     fig.update_layout(height=320,margin=dict(l=8,r=8,t=20,b=8),paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",font_color="#c5d4e9",xaxis=dict(showgrid=False),yaxis=dict(gridcolor="#263954"))
     return fig
+
+body_info={
+"🧠 Brain":("Cognitive health","Sleep, mood, stress and concentration check-ins can help the crew notice changes over time.","Track sleep and mood consistently. Use scheduled rest, team connection and approved support resources."),
+"❤️ Heart":("Cardiovascular health","Heart rate and blood-pressure trends can help track cardiovascular changes during adaptation to altered gravity.","Measure using approved equipment and compare with your personal baseline. Report persistent or concerning changes using mission procedures."),
+"🫁 Lungs":("Breathing and oxygen","Oxygen saturation and breathing symptoms can provide useful information about respiratory status.","Use approved measurement equipment. Recheck unexpected readings according to mission protocol and report concerning symptoms."),
+"🦴 Bones & muscles":("Musculoskeletal health","Microgravity can affect bone and muscle health. Exercise logs and mission-provided assessments can help track prevention routines.","Follow the assigned exercise and nutrition plan. Ordinary heart-rate or oxygen readings do not measure bone density."),
+"🛡️ Immune system":("Immune and general health","Temperature, symptoms, fatigue and available clinical test results can help monitor general health.","Record symptoms and temperature consistently. Ask mission medical support about persistent or unusual changes.")
+}
 
 if page=="Overview":
     r=st.session_state.history.iloc[-1]
@@ -83,6 +93,20 @@ if page=="Overview":
     a,b,c=st.columns(3)
     for col,title,desc in [(a,"CARDIOVASCULAR","Heart rate and blood-pressure trends"),(b,"IMMUNE & GENERAL","Temperature, symptoms and fatigue"),(c,"BEHAVIORAL WELLNESS","Sleep, mood, stress and isolation")]:
         with col: st.markdown(f'<div class="panel"><b>{title}</b><p class="muted">{desc}</p></div>',unsafe_allow_html=True)
+
+elif page=="Body Explorer":
+    st.markdown('<div class="hero"><div class="eyebrow">INTERACTIVE CREW BODY MAP</div><h1>Body Explorer</h1><p>Select a body system to understand what ASTRA MEDI can monitor during a space mission.</p></div>',unsafe_allow_html=True)
+    st.markdown('<div class="panel"><div style="text-align:center;font-size:5rem;line-height:1.3">🧑‍🚀</div><div style="text-align:center;color:#58e1f2;font-weight:700;letter-spacing:.12em">ASTRONAUT SYSTEMS VIEW</div><p class="muted" style="text-align:center">Choose a system below to explore its health indicators.</p></div>',unsafe_allow_html=True)
+    selected=st.radio("Choose a body system",list(body_info.keys()),horizontal=True,label_visibility="collapsed")
+    title,description,action=body_info[selected]
+    st.markdown(f'<div class="panel"><div class="eyebrow">SELECTED SYSTEM</div><h2>{selected} · {title}</h2><p>{description}</p><hr><b>Suggested health-support action</b><p class="muted">{action}</p></div>',unsafe_allow_html=True)
+    if selected=="❤️ Heart":
+        r=st.session_state.history.iloc[-1]
+        m1,m2=st.columns(2)
+        with m1: st.metric("Latest demo heart rate",f'{int(r["Heart rate"])} bpm')
+        with m2: st.metric("Latest demo systolic BP",f'{int(r["Systolic BP"])} mmHg')
+        st.plotly_chart(chart(st.session_state.history,"Heart rate"),use_container_width=True,config={"displayModeBar":False})
+    st.caption("This is an educational body-system explorer, not an anatomical scan or medical diagnosis.")
 
 elif page=="Health analytics":
     st.markdown('<div class="hero"><div class="eyebrow">DATA EXPLORER</div><h1>Health analytics</h1><p>Explore recorded indicators and spot changes over time.</p></div>',unsafe_allow_html=True)
@@ -132,4 +156,4 @@ else:
     with st.expander("When should I seek help?"): st.write("Follow mission-specific thresholds and escalation procedures. Contact medical support for severe, sudden or worrying symptoms.")
 
 st.markdown("---")
-st.markdown('<p class="muted" style="text-align:center">ASTRA-MED · Advanced Astronaut Health Monitoring & Decision Support · Hackathon prototype · Not a medical device</p>',unsafe_allow_html=True)
+st.markdown('<p class="muted" style="text-align:center">ASTRA MEDI · Monitor · Protect · Explore · Hackathon prototype · Not a medical device</p>',unsafe_allow_html=True)
